@@ -15,16 +15,16 @@ function App() {
         <NavBarAdmin></NavBarAdmin>
       </header>
       <Routes>
-        <Route path='/login' element={<Login></Login>}></Route>
+        <Route path='login' element={<Login></Login>}></Route>
         <Route path='/' element={<h1>Home Page</h1>} />
-        <Route path='/user' element={<UserList></UserList>}></Route>
+        <Route path='user' element={<UserList></UserList>}></Route>
         <Route path='/user/create' element={<CreateUser></CreateUser>}></Route>
         <Route
-          path='/user/reset'
+          path='user/reset'
           element={<ResetPassword></ResetPassword>}
         ></Route>
-        <Route path='/garden/create' element={<CreateGarden />} />
-        <Route path='/garden' element={<GardenList />} />
+        <Route path='garden/create' element={<CreateGarden />} />
+        <Route path='garden' element={<GardenList />} />
       </Routes>
     </div>
   );
