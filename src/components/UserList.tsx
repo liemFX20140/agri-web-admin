@@ -91,15 +91,25 @@ export function UserList() {
                       </Typography>
                     </td>
                     <td className={`${classes} bg-blue-gray-50/50`}>
-                      <Typography
-                        as='a'
-                        href='#'
-                        variant='small'
+                      <Button
+                        variant='text'
                         color='blue'
                         className='font-medium'
+                        onClick={() => {
+                          const user = {
+                            _id,
+                            email,
+                            userRole,
+                            phone,
+                            fullName,
+                          };
+                          navigate(`/user/${_id}`, {
+                            state: user,
+                          });
+                        }}
                       >
-                        Edit
-                      </Typography>
+                        Chỉnh sửa
+                      </Button>
                     </td>
                   </tr>
                 );

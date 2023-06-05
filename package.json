@@ -17,7 +17,8 @@
     "react-dom": "^18.2.0",
     "react-icons": "^4.9.0",
     "react-redux": "^8.0.5",
-    "react-router-dom": "^6.11.2"
+    "react-router-dom": "^6.11.2",
+    "vite-plugin-ssr": "^0.4.131"
   },
   "devDependencies": {
     "@types/node": "^20.2.5",

@@ -1,13 +1,16 @@
 import { type FormEvent, useState } from 'react';
 import { Card, Input, Button, Typography } from '@material-tailwind/react';
 import { useNavigate } from 'react-router-dom';
-
+import { useDispatch } from 'react-redux';
+import { logIn } from '../store/authSlice';
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [status, setStatus] = useState<Number>();
   const baseurl = import.meta.env.VITE_BASE_URL;
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
     const res = await fetch(`${baseurl}/user/adminlogin`, {
@@ -16,10 +19,13 @@ const Login = () => {
       body: JSON.stringify({ email, password }),
       credentials: 'include',
     });
+    const data = await res.json();
     if (res.status !== 200) {
       setStatus(res.status);
       return;
     }
+    dispatch(logIn(data));
+
     navigate('/');
   };
 
@@ -66,7 +72,7 @@ const Login = () => {
           </a>
         </Typography>
         <Typography color='gray' className='mt-4 text-center font-normal'>
-          Bạn chưa có tài khoản? Liên hệ: 0986219238.
+          Bạn chưa có tài khoản?
         </Typography>
       </form>
       {status === 405 && (

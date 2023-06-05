@@ -7,7 +7,7 @@ import {
   Select,
   Option,
 } from '@material-tailwind/react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 type user = {
   email: string;
@@ -20,27 +20,35 @@ type user = {
 
 type gardenArea = { area: String; gardenType: String };
 
-export function CreateGarden() {
+export function EditGarden() {
   const baseurl = import.meta.env.VITE_BASE_URL;
   const navigate = useNavigate();
-  const [gardenName, setGardenName] = useState('');
+  const location = useLocation();
+  const gardenState = location.state;
+  const [gardenName, setGardenName] = useState(gardenState.gardenName);
   const [area, setArea] = useState('');
   const [gardenType, setGardenType] = useState('');
-  const [gardenAddress, setGardenAddress] = useState('');
-  const [gardenArea, setGardenArea] = useState<gardenArea[]>([]);
+  const [gardenAddress, setGardenAddress] = useState(gardenState.address);
+  const [gardenArea, setGardenArea] = useState<gardenArea[]>(
+    gardenState.gardenArea
+  );
   const [owner, setOwner] = useState<string>();
   const [options, setOptions] = useState<user[]>([]);
   const [isAlert, setIsAlert] = useState(false);
-  const [farmers, setFarmers] = useState<user[]>([]);
-  const [selectedFarmers, setSelectedFarmer] = useState<String[]>([]);
-  const [farmer, setFarmer] = useState<String>();
+  const [farmers, setFarmers] = useState<user[]>(gardenState.farmer);
+  const [selectedFarmers, setSelectedFarmer] = useState<user[]>(
+    gardenState.farmer
+  );
+
+  const [farmer, setFarmer] = useState<user>();
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
     if (gardenArea.length === 0) {
       setIsAlert(true);
       return;
     }
-    await fetch(`${baseurl}/garden/create`, {
+    const mappedFarmer = selectedFarmers.map((fammer) => fammer._id);
+    await fetch(`${baseurl}/garden/edit/${gardenState._id}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -50,7 +58,7 @@ export function CreateGarden() {
         gardenArea,
         gardenAddress,
         owner,
-        selectedFarmers,
+        mappedFarmer,
       }),
     });
     navigate('/garden');
@@ -171,6 +179,7 @@ export function CreateGarden() {
                   <li key={index}>
                     <Button
                       color='red'
+                      className='mx-4'
                       onClick={() => {
                         setGardenArea((prev: gardenArea[]) => {
                           const newData = JSON.parse(
@@ -178,7 +187,6 @@ export function CreateGarden() {
                           );
                           return newData;
                         });
-                        console.log(gardenArea);
                       }}
                     >{`${g.gardenType} : ${g.area} m2`}</Button>
                   </li>
@@ -197,7 +205,11 @@ export function CreateGarden() {
                 label='Nông dân'
                 onChange={(value) => {
                   if (!value) return;
-                  setFarmer(value);
+                  const farmmerObj = options.find((user) => {
+                    user._id === value;
+                  });
+                  if (!farmmerObj) return;
+                  setFarmer(farmmerObj);
                 }}
               >
                 {farmers.map((farmer, index) => {
@@ -213,10 +225,9 @@ export function CreateGarden() {
               className='my-4 flex ml-auto'
               onClick={() => {
                 if (!farmer) return;
-                setSelectedFarmer((prev: String[]) => {
+                setSelectedFarmer((prev: user[]) => {
                   return [farmer, ...prev];
                 });
-                setFarmer('');
               }}
             >
               Thêm
@@ -224,18 +235,17 @@ export function CreateGarden() {
           </div>
           <ul className='flex'>
             {selectedFarmers.map((farmer, index) => {
-              const farmerObj = farmers.find((user) => user._id === farmer);
               return (
                 <li key={index}>
                   <Button
                     color='red'
                     className='mx-2'
                     onClick={() => {
-                      setSelectedFarmer((prev: String[]) => {
+                      setSelectedFarmer((prev: user[]) => {
                         return prev.splice(index, 1);
                       });
                     }}
-                  >{`${farmerObj?.fullName} : ${farmerObj?.phone}`}</Button>
+                  >{`${farmer.fullName} : ${farmer.phone}`}</Button>
                 </li>
               );
             })}
@@ -250,7 +260,7 @@ export function CreateGarden() {
           }}
         />
         <Button className='mt-6' fullWidth type='submit'>
-          Tạo mới
+          Cập nhật
         </Button>
       </form>
       {isAlert && (

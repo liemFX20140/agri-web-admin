@@ -6,14 +6,17 @@ import {
   Button,
   IconButton,
 } from '@material-tailwind/react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { VscAccount, VscHome } from 'react-icons/vsc';
 import { BsTree } from 'react-icons/bs';
-
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState } from '../store/store';
+import { logOut } from '../store/authSlice';
 export default function NavbarAdmin() {
   const [openNav, setOpenNav] = useState(false);
   const navigate = useNavigate();
-
+  const isAuth = useSelector((state: RootState) => state.Auth.authenticated);
+  const dispatch = useDispatch();
   useEffect(() => {
     window.addEventListener(
       'resize',
@@ -29,10 +32,10 @@ export default function NavbarAdmin() {
         color='blue-gray'
         className='p-1 font-normal'
       >
-        <a href='/' className='flex items-center'>
+        <Link to='/' className='flex items-center'>
           <VscHome className='w-6 h-6 mr-2'></VscHome>
           Trang Chủ
-        </a>
+        </Link>
       </Typography>
       <Typography
         as='li'
@@ -40,10 +43,10 @@ export default function NavbarAdmin() {
         color='blue-gray'
         className='p-1 font-normal'
       >
-        <a href='/garden' className='flex items-center'>
+        <Link to='/garden' className='flex items-center'>
           <BsTree className='w-6 h-6 mr-2'></BsTree>
           Vườn cây
-        </a>
+        </Link>
       </Typography>
       <Typography
         as='li'
@@ -51,10 +54,10 @@ export default function NavbarAdmin() {
         color='blue-gray'
         className='p-1 font-normal'
       >
-        <a href='/user' className='flex items-center'>
+        <Link to='/user' className='flex items-center'>
           <VscAccount className='w-6 h-6 mr-2'></VscAccount>
           Người dùng
-        </a>
+        </Link>
       </Typography>
     </ul>
   );
@@ -70,16 +73,32 @@ export default function NavbarAdmin() {
           Logo
         </Typography>
         <div className='hidden lg:block'>{navList}</div>
-        <Button
-          variant='gradient'
-          size='sm'
-          className='hidden lg:inline-block'
-          onClick={() => {
-            navigate('/login');
-          }}
-        >
-          <span>Đăng nhập</span>
-        </Button>
+        {isAuth ? (
+          <Button
+            variant='gradient'
+            size='sm'
+            className='hidden lg:inline-block'
+            onClick={() => {
+              dispatch(logOut());
+              navigate('/login');
+            }}
+            color='red'
+          >
+            <span>Đăng xuất</span>
+          </Button>
+        ) : (
+          <Button
+            variant='gradient'
+            size='sm'
+            className='hidden lg:inline-block'
+            onClick={() => {
+              navigate('/login');
+            }}
+          >
+            <span>Đăng nhập</span>
+          </Button>
+        )}
+
         <IconButton
           variant='text'
           className='ml-auto h-6 w-6 text-inherit hover:bg-transparent focus:bg-transparent active:bg-transparent lg:hidden'

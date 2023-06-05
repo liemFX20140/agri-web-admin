@@ -7,8 +7,29 @@ import NavBarAdmin from './components/NavBar';
 import { Route, Routes } from 'react-router-dom';
 import { UserList } from './components/UserList';
 import { GardenList } from './components/GardenList';
+import { useDispatch } from 'react-redux';
+
+import { logIn } from './store/authSlice';
+import { Button } from '@material-tailwind/react';
+import { useEffect } from 'react';
+import { EditGarden } from './components/EditGarden';
+import { EditUser } from './components/EditUser';
 
 function App() {
+  const baseUrl = import.meta.env.VITE_BASE_URL;
+  const dispatch = useDispatch();
+  const getLogin = async () => {
+    const res = await fetch(`${baseUrl}/user/get`, {
+      credentials: 'include',
+    });
+    const data = await res.json();
+    if (res.status === 200) {
+      dispatch(logIn(data));
+    }
+  };
+  useEffect(() => {
+    getLogin();
+  }, []);
   return (
     <div>
       <header>
@@ -16,14 +37,19 @@ function App() {
       </header>
       <Routes>
         <Route path='login' element={<Login></Login>}></Route>
-        <Route path='/' element={<h1>Home Page</h1>} />
+        <Route
+          path='/'
+          element={<Button onClick={() => {}}>Home Page</Button>}
+        />
         <Route path='user' element={<UserList></UserList>}></Route>
         <Route path='/user/create' element={<CreateUser></CreateUser>}></Route>
         <Route
           path='user/reset'
           element={<ResetPassword></ResetPassword>}
         ></Route>
+        <Route path='user/:id' element={<EditUser></EditUser>}></Route>
         <Route path='garden/create' element={<CreateGarden />} />
+        <Route path='garden/:id' element={<EditGarden />} />
         <Route path='garden' element={<GardenList />} />
       </Routes>
     </div>

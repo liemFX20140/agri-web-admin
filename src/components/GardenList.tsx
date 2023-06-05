@@ -1,25 +1,33 @@
 import { Card, Typography, Button } from '@material-tailwind/react';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-const TABLE_HEAD = ['Tên vườn', 'Khu vực', 'Địa chỉ', 'Nông dân', 'Edit'];
+const TABLE_HEAD = [
+  'Tên vườn',
+  'Chủ vườn',
+  'Khu vực',
+  'Địa chỉ',
+  'Nông dân',
+  'Chỉnh sửa',
+];
 
 type user = {
   email: string;
   userRole: string;
   phone: string;
   fullName: string;
-  id: string;
+  _id: string;
 };
 type action = {};
 
 type gardenArea = { area: String; gardenType: String };
 type garden = {
-  users?: [user];
+  farmer: [user];
   action: [action];
   gardenArea: [gardenArea];
   address: String;
   _id: String;
   gardenName: String;
+  owner: user;
 };
 
 export function GardenList() {
@@ -62,7 +70,10 @@ export function GardenList() {
           </thead>
           <tbody>
             {TABLE_ROWS.map(
-              ({ gardenName, address, gardenArea, users }, index) => {
+              (
+                { gardenName, address, gardenArea, farmer, _id, owner },
+                index
+              ) => {
                 const isLast = index === TABLE_ROWS.length - 1;
                 const classes = isLast
                   ? 'p-4'
@@ -77,6 +88,15 @@ export function GardenList() {
                         className='font-normal'
                       >
                         {gardenName}
+                      </Typography>
+                    </td>
+                    <td className={classes}>
+                      <Typography
+                        variant='small'
+                        color='blue-gray'
+                        className='font-normal'
+                      >
+                        {owner?.fullName}
                       </Typography>
                     </td>
                     <td className={`${classes} bg-blue-gray-50/50`}>
@@ -100,30 +120,45 @@ export function GardenList() {
                       </Typography>
                     </td>
                     <td className={`${classes} bg-blue-gray-50/50`}>
-                      <Typography
-                        as='a'
-                        href='#'
-                        variant='small'
-                        color='blue'
-                        className='font-medium'
-                      >
-                        {!users
-                          ? ''
-                          : users.map((user: user) => {
-                              user.fullName;
-                            })}
-                      </Typography>
+                      {!farmer
+                        ? ''
+                        : farmer.map((user: user) => {
+                            return (
+                              <Button
+                                key={user._id}
+                                color='blue'
+                                variant='outlined'
+                                size='sm'
+                                className='font-medium mx-1'
+                                onClick={() => {
+                                  navigate(`/user/${user._id}`, {
+                                    state: user,
+                                  });
+                                }}
+                              >
+                                {user.fullName} : {user.phone}
+                              </Button>
+                            );
+                          })}
                     </td>
                     <td className={`${classes} bg-blue-gray-50/50`}>
-                      <Typography
-                        as='a'
-                        href='#'
-                        variant='small'
-                        color='blue'
-                        className='font-medium'
+                      <Button
+                        variant='text'
+                        className='font-normal'
+                        onClick={() => {
+                          const gardenState = {
+                            gardenName,
+                            address,
+                            gardenArea,
+                            farmer,
+                            owner,
+                            _id,
+                          };
+                          navigate(`/garden/${_id}`, { state: gardenState });
+                        }}
                       >
-                        Edit
-                      </Typography>
+                        Chỉnh sửa
+                      </Button>
                     </td>
                   </tr>
                 );
