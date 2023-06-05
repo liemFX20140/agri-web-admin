@@ -8,14 +8,8 @@ import {
   Option,
 } from '@material-tailwind/react';
 import { useLocation, useNavigate } from 'react-router-dom';
-
-type user = {
-  email: string;
-  userRole: string;
-  phone: string;
-  fullName: string;
-  _id: string;
-};
+import {} from 'module';
+import { user } from './CreateGarden';
 // type action = {};
 
 type gardenArea = { area: String; gardenType: String };
@@ -205,10 +199,11 @@ export function EditGarden() {
                 label='Nông dân'
                 onChange={(value) => {
                   if (!value) return;
+
                   const farmmerObj = options.find((user) => {
-                    user._id === value;
+                    return user._id === value;
                   });
-                  if (!farmmerObj) return;
+                  // if (!farmmerObj) return;
                   setFarmer(farmmerObj);
                 }}
               >
@@ -224,6 +219,7 @@ export function EditGarden() {
             <Button
               className='my-4 flex ml-auto'
               onClick={() => {
+                console.log(farmer);
                 if (!farmer) return;
                 setSelectedFarmer((prev: user[]) => {
                   return [farmer, ...prev];
@@ -245,7 +241,9 @@ export function EditGarden() {
                         return prev.splice(index, 1);
                       });
                     }}
-                  >{`${farmer.fullName} : ${farmer.phone}`}</Button>
+                  >
+                    {farmer.fullName} : {farmer.phone}
+                  </Button>
                 </li>
               );
             })}

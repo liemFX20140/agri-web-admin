@@ -1,6 +1,8 @@
 import { Card, Typography, Button } from '@material-tailwind/react';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import { gardenArea, treeType } from './CreateGarden';
+
 const TABLE_HEAD = [
   'Tên vườn',
   'Chủ vườn',
@@ -19,8 +21,7 @@ type user = {
 };
 type action = {};
 
-type gardenArea = { area: String; gardenType: String };
-type garden = {
+export type garden = {
   farmer: [user];
   action: [action];
   gardenArea: [gardenArea];
@@ -29,6 +30,11 @@ type garden = {
   gardenName: String;
   owner: user;
 };
+// type populatedGardenArea = {
+//   trees: treeType[];
+//   gardenType: String;
+//   area: String;
+// };
 
 export function GardenList() {
   const navigate = useNavigate();
@@ -39,7 +45,6 @@ export function GardenList() {
       credentials: 'include',
     });
     const data = await res.json();
-    console.log(data);
     setTABLE_ROWS(data);
   };
   useEffect(() => {
@@ -91,21 +96,45 @@ export function GardenList() {
                       </Typography>
                     </td>
                     <td className={classes}>
-                      <Typography
-                        variant='small'
+                      <Button
+                        variant='text'
                         color='blue-gray'
                         className='font-normal'
+                        onClick={() => {
+                          navigate(`/user/${owner?._id}`, { state: owner });
+                        }}
                       >
                         {owner?.fullName}
-                      </Typography>
+                      </Button>
                     </td>
                     <td className={`${classes} bg-blue-gray-50/50`}>
                       <div>
-                        {gardenArea.map((garden: gardenArea, index) => {
+                        {gardenArea.map((garden: any, index) => {
                           return (
-                            <p
-                              key={index}
-                            >{`${garden.gardenType} : ${garden.area} m2`}</p>
+                            <div key={index}>
+                              <p>
+                                {`${garden.gardenType} _ ${garden.area} m2 `}
+                              </p>
+                              <span>
+                                Cây trồng:{' '}
+                                {garden.trees.map((tree: treeType) => {
+                                  return (
+                                    <Button
+                                      key={tree._id}
+                                      variant='text'
+                                      className='font-normal text-lg mx-2'
+                                      onClick={() => {
+                                        navigate(`/tree/${tree._id}`, {
+                                          state: tree,
+                                        });
+                                      }}
+                                    >
+                                      {tree.tenCay}
+                                    </Button>
+                                  );
+                                })}
+                              </span>
+                            </div>
                           );
                         })}
                       </div>

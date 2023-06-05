@@ -9,6 +9,7 @@ import {
 import { useNavigate, Link } from 'react-router-dom';
 import { VscAccount, VscHome } from 'react-icons/vsc';
 import { BsTree } from 'react-icons/bs';
+import { CgTrees } from 'react-icons/cg';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
 import { logOut } from '../store/authSlice';
@@ -30,7 +31,7 @@ export default function NavbarAdmin() {
         as='li'
         variant='small'
         color='blue-gray'
-        className='p-1 font-normal'
+        className='p-1 font-normal hover:text-blue-500'
       >
         <Link to='/' className='flex items-center'>
           <VscHome className='w-6 h-6 mr-2'></VscHome>
@@ -41,10 +42,10 @@ export default function NavbarAdmin() {
         as='li'
         variant='small'
         color='blue-gray'
-        className='p-1 font-normal'
+        className='p-1 font-normal  hover:text-blue-500'
       >
         <Link to='/garden' className='flex items-center'>
-          <BsTree className='w-6 h-6 mr-2'></BsTree>
+          <CgTrees className='w-6 h-6 mr-2'></CgTrees>
           Vườn cây
         </Link>
       </Typography>
@@ -54,9 +55,20 @@ export default function NavbarAdmin() {
         color='blue-gray'
         className='p-1 font-normal'
       >
-        <Link to='/user' className='flex items-center'>
+        <Link to='/user' className='flex items-center  hover:text-blue-500'>
           <VscAccount className='w-6 h-6 mr-2'></VscAccount>
           Người dùng
+        </Link>
+      </Typography>
+      <Typography
+        as='li'
+        variant='small'
+        color='blue-gray'
+        className='p-1 font-normal  hover:text-blue-500'
+      >
+        <Link to='/tree' className='flex items-center'>
+          <BsTree className='w-6 h-6 mr-2'></BsTree>
+          Cây trồng
         </Link>
       </Typography>
     </ul>

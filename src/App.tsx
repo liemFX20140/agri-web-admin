@@ -14,6 +14,9 @@ import { Button } from '@material-tailwind/react';
 import { useEffect } from 'react';
 import { EditGarden } from './components/EditGarden';
 import { EditUser } from './components/EditUser';
+import { CreateTree } from './components/CreateTree';
+import { TreeList } from './components/TreeList';
+import { TreeDetail } from './components/TreeDetail';
 
 function App() {
   const baseUrl = import.meta.env.VITE_BASE_URL;
@@ -51,6 +54,9 @@ function App() {
         <Route path='garden/create' element={<CreateGarden />} />
         <Route path='garden/:id' element={<EditGarden />} />
         <Route path='garden' element={<GardenList />} />
+        <Route path='tree/create' element={<CreateTree />} />
+        <Route path='tree/:id' element={<TreeDetail />} />
+        <Route path='tree' element={<TreeList />} />
       </Routes>
     </div>
   );

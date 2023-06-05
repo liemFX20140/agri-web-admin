@@ -8,8 +8,9 @@ import {
   Option,
 } from '@material-tailwind/react';
 import { useNavigate } from 'react-router-dom';
-
-type user = {
+import type { giaidoanType } from './CreateTree';
+import type { garden } from './GardenList';
+export type user = {
   email: string;
   userRole: string;
   phone: string;
@@ -17,8 +18,14 @@ type user = {
   _id: string;
 };
 // type action = {};
+export type treeType = {
+  tenCay: string;
+  giaiDoan: giaidoanType[];
+  garden: garden[];
+  _id: string;
+};
 
-type gardenArea = { area: String; gardenType: String };
+export type gardenArea = { area: String; gardenType: String; trees: String[] };
 
 export function CreateGarden() {
   const baseurl = import.meta.env.VITE_BASE_URL;
@@ -34,6 +41,9 @@ export function CreateGarden() {
   const [farmers, setFarmers] = useState<user[]>([]);
   const [selectedFarmers, setSelectedFarmer] = useState<String[]>([]);
   const [farmer, setFarmer] = useState<String>();
+  const [treesOption, setTreeOption] = useState<treeType[]>([]);
+  const [selectedTree, setSelectedTree] = useState<String>();
+  const [trees, setTrees] = useState<String[]>([]);
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
     if (gardenArea.length === 0) {
@@ -80,9 +90,17 @@ export function CreateGarden() {
     setFarmers(data);
   };
 
+  const getTrees = async () => {
+    const res = await fetch(`${baseurl}/tree/all`);
+    const data = await res.json();
+    console.log('tree', data);
+    setTreeOption(data);
+  };
+
   useEffect(() => {
     getUsers();
     getFarmer();
+    getTrees();
   }, []);
   return (
     <Card
@@ -127,7 +145,7 @@ export function CreateGarden() {
           <Typography className='text-left text-lg' size='medium'>
             Các khu vực trong vườn
           </Typography>
-          <div className=''>
+          <div className='flex flex-col gap-4'>
             <div className='flex gap-4'>
               <Select
                 variant='outlined'
@@ -151,19 +169,69 @@ export function CreateGarden() {
                 }}
               />
             </div>
+            <Select
+              variant='outlined'
+              label='Cây trồng'
+              onChange={(value) => {
+                if (!value) return;
+                setSelectedTree(value);
+              }}
+            >
+              {treesOption.map((tree: treeType, index) => {
+                return (
+                  <Option value={tree._id} key={index}>
+                    {tree.tenCay}
+                  </Option>
+                );
+              })}
+            </Select>
+            <Button
+              className='my-4 flex ml-auto'
+              onClick={() => {
+                if (!selectedTree) return;
+                setTrees((prev) => {
+                  return [selectedTree, ...prev];
+                });
+                setSelectedTree('');
+              }}
+            >
+              Thêm cây trồng
+            </Button>
+            <ul className='flex gap-4 ml-auto'>
+              {trees.map((tree, index) => {
+                const treeObj = treesOption.find(
+                  (treeOption) => treeOption._id === tree
+                );
+                return (
+                  <li key={index}>
+                    <Button
+                      color='red'
+                      onClick={() => {
+                        setTrees((prev: String[]) => {
+                          return prev.splice(index, 1);
+                        });
+                        console.log(gardenArea);
+                      }}
+                    >
+                      {treeObj?.tenCay}
+                    </Button>
+                  </li>
+                );
+              })}
+            </ul>
             <Button
               className='my-4 flex ml-auto'
               onClick={() => {
                 if (gardenType === '') return;
                 setGardenArea((prev: gardenArea[]) => {
-                  const gArea: gardenArea = { gardenType, area };
+                  const gArea: gardenArea = { gardenType, area, trees };
                   return [gArea, ...prev];
                 });
                 setGardenType('');
                 setArea('');
               }}
             >
-              Thêm
+              Thêm khu vườn
             </Button>
             <ul className='flex'>
               {gardenArea.map((g, index) => {
@@ -219,7 +287,7 @@ export function CreateGarden() {
                 setFarmer('');
               }}
             >
-              Thêm
+              Thêm nông dân
             </Button>
           </div>
           <ul className='flex'>
